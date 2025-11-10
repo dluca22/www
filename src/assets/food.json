@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1, 
+    "name": "ribs",
+    "temperature": 68,
+    "time": 720,
+    "extraPrep": false
+  },
+  {
+    "id": 2, 
+    "name": "burger",
+    "temperature": 52,
+    "time": 180,
+    "extraPrep": true
+  }
+]
