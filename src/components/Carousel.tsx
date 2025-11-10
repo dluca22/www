@@ -1,13 +1,12 @@
-// import { useCallback, useState } from "react";
 import { RecipeCard } from "./RecipeCard"
-import meals from '../assets/food.json'
-import type { SvFood } from "../assets/types"
+import { RecipeContext } from "../services/dataProvider"
+import { useContext } from "react";
 
 export const Carousel = () => {
-  console.log(meals)
-  const recipeMeals: SvFood[] = meals
+  // const {recipes} = useFetchRecipe();
+  const {recipes} = useContext(RecipeContext);
 
-  const children = recipeMeals.map(r =>
+  const children = recipes.map(r =>
     <RecipeCard
       key={r.id}
       {...r}

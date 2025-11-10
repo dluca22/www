@@ -2,6 +2,7 @@
   {
     "id": 1, 
     "name": "ribs",
+    "type": "pork",
     "description": "whole pork ribs rack",
     "temperature": 68,
     "time": 720,
@@ -10,6 +11,7 @@
   {
     "id": 2, 
     "name": "burger",
+    "type": "beef",
     "description": "Hand made lean beef burgers",
     "temperature": 52,
     "time": 180,
