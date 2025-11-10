@@ -1,37 +1,25 @@
-import { useCallback, useState } from "react";
+// import { useCallback, useState } from "react";
 import { RecipeCard } from "./RecipeCard"
-
+import meals from '../assets/food.json'
+import type { SvFood } from "../assets/types"
 
 export const Carousel = () => {
-  const [count, setCount] = useState(0);
-  
+  console.log(meals)
+  const recipeMeals: SvFood[] = meals
 
-
-
-  const loggit = useCallback((cardName: string) => {
-    console.log(cardName)
-    console.log('inside')
-  }, []);
-
-  console.log('Carousel render – loggit identity:', loggit === loggit )
-
-  const children = [0,1,2].map(r => 
-    <RecipeCard key={r} 
-    name={`Card-${r}`}
-    onMouseEnter={loggit}
+  const children = recipeMeals.map(r =>
+    <RecipeCard
+      key={r.id}
+      {...r}
     />
   )
 
-  
-  
   return (
-    <h1 className="text-cyan-700 hover:text-blue-500 "
-      onMouseLeave={() => setCount((prevVal) => prevVal + 1)}
-    >
-      Hi, I am Carousel
+    <div >
+      <h1 className="text-3xl mb-3">Recipe Carousel</h1>
       <div className="flex gap-2">
-        { children }
+        {children}
       </div>
-    </h1>
+    </div>
   )
 }

@@ -2,6 +2,7 @@
   {
     "id": 1, 
     "name": "ribs",
+    "description": "whole pork ribs rack",
     "temperature": 68,
     "time": 720,
     "extraPrep": false
@@ -9,6 +10,7 @@
   {
     "id": 2, 
     "name": "burger",
+    "description": "Hand made lean beef burgers",
     "temperature": 52,
     "time": 180,
     "extraPrep": true

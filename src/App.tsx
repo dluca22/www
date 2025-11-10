@@ -1,20 +1,24 @@
 // import { useState } from 'react'
+import { useState } from 'react'
 import './App.css'
-import meals from './assets/food.json'
+import { AddForm } from './components/AddForm'
 import { Carousel } from './components/Carousel'
 import { Navbar } from './components/Navbar'
 
 function App() {
-  // const [count, setCount] = useState(0)
-
-  console.log(meals)
-
-
+  const [formHidden, setFormHidden] = useState(true);
   return (
     <>
-      <Navbar/>
-      <Carousel/>
-
+      <Navbar />
+      <div className="row w-full flex justify-end">
+        <button
+          className='mr-0 rounded-lg text-white font-semibold p-2 bg-blue-600 hover:bg-blue-400'
+          onClick={() => setFormHidden((isHidden) => !isHidden)}>
+          Add
+        </button>
+      </div>
+      <AddForm hidden={formHidden} />
+      <Carousel />
     </>
   )
 }
