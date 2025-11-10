@@ -1,10 +1,9 @@
-import { RecipeCard } from "./RecipeCard"
-import { RecipeContext } from "../services/dataProvider"
-import { useContext } from "react";
+import { RecipeCard } from "./RecipeCard";
+import { useRecipe } from "../services/dataProvider";
 
 export const Carousel = () => {
   // const {recipes} = useFetchRecipe();
-  const {recipes} = useContext(RecipeContext);
+  const {recipes} = useRecipe();
 
   const children = recipes.map(r =>
     <RecipeCard
