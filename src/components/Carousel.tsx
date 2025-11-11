@@ -2,15 +2,17 @@ import { RecipeCard } from "./RecipeCard";
 import { useRecipe } from "../services/dataProvider";
 
 export const Carousel = () => {
-  // const {recipes} = useFetchRecipe();
   const {recipes} = useRecipe();
 
   const children = recipes.map(r =>
+    
     <RecipeCard
       key={r.id}
       {...r}
     />
   )
+    debugger
+  
 
   return (
     <div >
