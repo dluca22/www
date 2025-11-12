@@ -1,7 +1,7 @@
 
 import { createContext, useContext, useMemo } from 'react';
-import { ApiService } from './httpService';
-import { MockService } from './mockService';
+import { ApiService } from '../services/httpService';
+import { MockService } from '../services/mockService';
 
 const ApiContext = createContext<ApiService | undefined >(undefined);
 const MOCK =  true;

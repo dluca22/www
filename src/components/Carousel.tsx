@@ -1,5 +1,5 @@
 import { RecipeCard } from "./RecipeCard";
-import { useRecipe } from "../services/dataProvider";
+import { useRecipe } from "../providers/dataProvider";
 import type { SvRecipe } from "../assets/types";
 import type { FC } from "react";
 import type { Recipe } from "../assets/recipe";

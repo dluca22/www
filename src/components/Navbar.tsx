@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { ThemeContext } from "../App"
-// import { useApi } from "../services/apiProvider";
+// import { useApi } from "../providers/apiProvider";
 
 export const Navbar = () => {
   // const mockup:any = useApi();

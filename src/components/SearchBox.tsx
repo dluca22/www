@@ -1,4 +1,4 @@
-import { useRecipe } from "../services/dataProvider";
+import { useRecipe } from "../providers/dataProvider";
 
 
 export const SearchBox = () => {
