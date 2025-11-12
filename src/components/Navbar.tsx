@@ -1,10 +1,32 @@
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { ThemeContext } from "../App"
-// import { useApi } from "../providers/apiProvider";
+import { useApi } from "../providers/apiProvider";
+import type { SvRecipe } from "../assets/types";
+import type { ApiService } from "../services/httpService";
 
 export const Navbar = () => {
-  // const mockup:any = useApi();
-  // console.log(mockup.post()); // can be called from context
+  const api: ApiService = useApi();
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchData = async () => {
+      try {
+        const data = await api.get<SvRecipe[]>('/recipes');
+        if (!mounted) return;
+        console.log(data);
+        debugger;
+
+      } catch (error) {
+        debugger;
+        console.log(error);
+      }
+
+    }
+    fetchData();
+
+    return () => { mounted = false; }
+
+  }, [])
 
   const theme = useContext(ThemeContext);  // get values from context avoiding prop drilling
   return (

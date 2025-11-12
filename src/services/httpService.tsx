@@ -34,15 +34,16 @@ export interface IApiService{
     object: TRequest,
     config?: RequestConfig
   ): Promise<TResponse>;
-  patch<TRequest, TResponse>(
-    path: string,
-    object: TRequest
-  ): Promise<TResponse>;
+  // patch<TRequest, TResponse>(
+  //   path: string,
+  //   object: TRequest
+  // ): Promise<TResponse>;
   put<TRequest, TResponse>(path: string, object: TRequest): Promise<TResponse>;
   get<TResponse>(path: string): Promise<TResponse>;
+  delete<TResponse>(path: string): Promise<TResponse>;
 }
 
-export class ApiService {
+export class ApiService implements IApiService {
   private _config: any;
   private _appApiToken: string | undefined;
   private defaultTimeout: number = 1000 * 10;
@@ -96,7 +97,8 @@ export class ApiService {
     });
   }
 
-   async get(url:string, config: any) {
+   async get<TResponse>(url:string, config?: any): Promise<TResponse>
+    {
     try {
       const response = await this.client.get(url, config);
       return response.data;
@@ -105,9 +107,27 @@ export class ApiService {
     }
   }
 
-  async post(url:any, data: any, config: any) {
+  async post<TRequest, TResponse>(url:any, data: any, config: any): Promise<TResponse> {
     try {
       const response = await this.client.post(url, data, config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async put<TRequest, TResponse>(url: string, data: TRequest): Promise<TResponse> {
+    try {
+      const response = await this.client.post(url, data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async delete<TResponse>(url:string): Promise<TResponse> {
+    try {
+      const response = await this.client.post(url);
       return response.data;
     } catch (error) {
       throw error;

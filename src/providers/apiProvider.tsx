@@ -4,11 +4,11 @@ import { ApiService } from '../services/httpService';
 import { MockService } from '../services/mockService';
 
 const ApiContext = createContext<ApiService | undefined >(undefined);
-const MOCK =  true;
+const MOCK_PROVIDER:boolean = false;
 
 export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children }: { children: React.ReactNode }) => {
   const apiService = useMemo(()=> {
-    if(MOCK === true){
+    if(MOCK_PROVIDER){
       const mock: any = new MockService(); // just to test injection and context providing
       return mock;
     } else {

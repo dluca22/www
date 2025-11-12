@@ -4,10 +4,9 @@ import './App.css'
 import { RecipeForm } from './components/AddForm'
 import { Carousel } from './components/Carousel'
 import { Navbar } from './components/Navbar'
-import { RecipeDataProvider, useRecipe } from './providers/dataProvider'
+import { useRecipe } from './providers/dataProvider'
 import { SearchBox } from './components/SearchBox'
 import type { SvRecipe } from './assets/types'
-import { ApiProvider } from './providers/apiProvider'
 import { AppProvider } from './providers/appProviders'
 
 export const ThemeContext = createContext("light"); // set up a context with default value light

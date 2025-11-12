@@ -1,29 +1,21 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
-import type { SvRecipe } from "../assets/types";
+import type { ErrorResponse, HookActions, RecipeState, SvRecipe } from "../assets/types";
+import { useApi } from "./apiProvider";
 
-const BASE_URL = 'http://localhost:3001'
+const BASE_URL = 'http://localhost:3001';
 // custom hook to fetch data from file (or api)
 function useRecipeFetch(): {
   recipes: SvRecipe[],
   searchTerms: string,
   setSearchTerms: (terms: string) => void;
   setRecipe: (recipe: SvRecipe | Partial<SvRecipe>) => void;
+  getRecipes: () => void
 } {
-  // const [recipes, setRecipes] = useState<SvRecipes[]>([]);
+
+  const api = useApi();
+
   console.log('called useRecipeFetch');
 
-  type RecipeState = { // declare what is the current state of the hook, providing both the data and the serch terms that are being passed into the hook
-    recipes: SvRecipe[],
-    searchTerms: string
-  }
-
-  type HookActions = { type: "setRecipes", payload: SvRecipe[] } // declare the type of the action and the returned payload
-    | { type: "addRecipe", payload: SvRecipe }
-    | { type: "updateRecipe", payload: SvRecipe }
-    | { type: "setSearchTerms", payload: string }
-
-  // useReducer ritorna un array di "stato" come abbiamo definito noi, e una callback di dispatch
-  // come paremtri in entrata prende lo stato e un'azione
 
   /* useReducer mantiene lo stato del hook (recipes + search) e riceve azioni via dispatch.
    Qui gestisce l'azione "setRecipes" per aggiornare l'array delle ricette in modo immutabile:
@@ -33,10 +25,7 @@ function useRecipeFetch(): {
     (state: RecipeState, action: HookActions) => {
       switch (action.type) {
         case 'setRecipes': {
-          return {
-            ...state,
-            recipes: [...action.payload]
-          }
+          return { ...state, recipes: [...action.payload] }
         }
         case 'addRecipe': {
           debugger
@@ -44,19 +33,19 @@ function useRecipeFetch(): {
         }
         case 'updateRecipe': {
           const updateIdx = state.recipes.findIndex(r => r.id === action.payload.id);
-          if(updateIdx === -1){
-            return state;
-          }
 
-          // copy array and update the instance at idx
-          debugger
+          if (updateIdx === -1) { return state; }
+
           let recipes = [...state.recipes];
           recipes[updateIdx] = action.payload;
 
-          return { ...state,  recipes: recipes}
+          return { ...state, recipes: recipes }
         }
         case 'setSearchTerms': {
           return { ...state, searchTerms: action.payload }
+        }
+        case 'setError': {
+          return { ...state, errorMessage: action.payload }
         }
 
         default: {
@@ -64,30 +53,50 @@ function useRecipeFetch(): {
         }
       }
     },
-    {
-      recipes: [],
-      searchTerms: ""
-    }
+    { recipes: [], searchTerms: "", errored: false, errorMessage: "" } // initial state
   )
 
+  // useEffect(() => {
+  // fetch('../food.json')
+
+  // fetch(`${BASE_URL}/recipes`)
+  //   .then((res) => {
+  //     if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+  //     return res.json();
+  //   })
+  //   .then((data: SvRecipe[]) => {
+  //     console.log('call fetch')
+  //     dispatch(
+  //       {
+  //         type: 'setRecipes',
+  //         payload: data
+  //       }
+  //     )
+  //   })
+  // .catch((err) => setError(err.message))
+  // .finally(() => setLoading(false));
+  // }, []);
   useEffect(() => {
-    // fetch('../food.json')
-    fetch(`${BASE_URL}/recipes`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-        return res.json();
-      })
-      .then((data:SvRecipe[]) => {
-        console.log('call fetch')
-        dispatch(
-          {
-            type: 'setRecipes',
-            payload: data
-          }
-        )
-      })
-    // .catch((err) => setError(err.message))
-    // .finally(() => setLoading(false));
+    let isMounted = true; // helps prevent state updates after unmount
+
+    const fetchData = async () => {
+      try {
+        const data = await getRecipes();
+        if (!isMounted) return;
+        dispatch({ type: 'setRecipes', payload: data as SvRecipe[] });
+      } catch (err: any) {
+        if (!isMounted) return;
+        dispatch({ type: 'setError', payload: err.message });
+      }
+    };
+
+
+    fetchData();
+
+    // cleanup function to avoid updating unmounted component
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // the function that we will also expose to trigger the dispatch action
@@ -101,14 +110,12 @@ function useRecipeFetch(): {
 
   // accept partial recipe in case of addition of a new one that is missing the id
   const setRecipe = useCallback((recipe: Partial<SvRecipe>) => {
-    debugger
-    if(!recipe.id){
+    if (!recipe.id) {
       recipe['id'] = Math.ceil(Math.random() * 100) + 100; //randomize
       dispatch({
         type: 'addRecipe',
         payload: recipe as SvRecipe // now it is  a complete recipe since id was assigned
       })
-
     } else {
       dispatch({
         type: 'updateRecipe',
@@ -117,6 +124,19 @@ function useRecipeFetch(): {
     }
   }, [])
 
+  const getRecipes = useCallback(async (): Promise<SvRecipe[] | ErrorResponse> => {
+    try {
+      const data = await api.get<SvRecipe[]>('/recipes');
+      return data;
+
+    } catch (error: any) {
+      let message = typeof error === 'string' ? error : error.message || 'Error fetching data from API';
+      console.log("Data fetch error", error);
+      return { errored: true, errorMessage: message };
+    }
+  }, [api])
+
+
   const filteredRecipes = useMemo(
     () => recipes.filter(r => {
       return r.description?.toLocaleLowerCase().includes(searchTerms.toLocaleLowerCase())
@@ -124,7 +144,7 @@ function useRecipeFetch(): {
         || r.type?.toLocaleLowerCase().includes(searchTerms.toLocaleLowerCase())
     }), [recipes, searchTerms])
 
-  return { recipes: filteredRecipes, searchTerms, setSearchTerms, setRecipe };
+  return { recipes: filteredRecipes, searchTerms, setSearchTerms, setRecipe, getRecipes };
 }
 
 // create a context forcing type definition to the result of the function populating it, in this case, the useRecipeFetch
@@ -133,7 +153,7 @@ const RecipeContext = createContext<ReturnType<typeof useRecipeFetch>>({} as unk
 
 
 // wrapper to abstract the context to a generic portable provider
-export function RecipeDataProvider({ children }: { children: React.ReactNode }) { 
+export function RecipeDataProvider({ children }: { children: React.ReactNode }) {
   return (
     <RecipeContext.Provider value={useRecipeFetch()}>
       {children}
@@ -147,7 +167,7 @@ export function useRecipe(): ReturnType<typeof useRecipeFetch> {
     console.log('Error getting data from Context(RecipeContext)');
     throw new Error();
   }
-  
+
 
   return context;
 }
