@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer } from "react";
 import type { SvRecipe } from "../assets/types";
 
+const BASE_URL = 'http://localhost:3001'
 // custom hook to fetch data from file (or api)
 function useRecipeFetch(): {
   recipes: SvRecipe[],
@@ -70,12 +71,13 @@ function useRecipeFetch(): {
   )
 
   useEffect(() => {
-    fetch('../food.json')
+    // fetch('../food.json')
+    fetch(`${BASE_URL}/recipes`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
         return res.json();
       })
-      .then((data) => {
+      .then((data:SvRecipe[]) => {
         console.log('call fetch')
         dispatch(
           {
@@ -131,9 +133,7 @@ const RecipeContext = createContext<ReturnType<typeof useRecipeFetch>>({} as unk
 
 
 // wrapper to abstract the context to a generic portable provider
-export function RecipeDataProvider({
-  children
-}: { children: React.ReactNode }) {
+export function RecipeDataProvider({ children }: { children: React.ReactNode }) { 
   return (
     <RecipeContext.Provider value={useRecipeFetch()}>
       {children}

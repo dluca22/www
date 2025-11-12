@@ -7,6 +7,7 @@ import { Navbar } from './components/Navbar'
 import { RecipeDataProvider, useRecipe } from './services/dataProvider'
 import { SearchBox } from './components/SearchBox'
 import type { SvRecipe } from './assets/types'
+import { ApiProvider } from './services/apiProvider'
 
 export const ThemeContext = createContext("light"); // set up a context with default value light
 
@@ -29,30 +30,29 @@ function App() {
   }, [])
 
   return (
-    <RecipeDataProvider> {/* hide away the context context to an extensible provider accepting nested children components */}
-      <ThemeContext.Provider value="dark"> {/* whenever we provide it to consumers, we can instantiate an arbitrary value*/}
-        <Navbar />
-        <div className="row w-full flex justify-between ">
-          <SearchBox/>
-          <button
-            className='mr-0 rounded-lg text-white font-semibold p-2 bg-blue-600 hover:bg-blue-400'
-            onClick={() => openEditForm()}>
-            Add
-          </button>
-        </div>
-        { formHidden == false && // toggle hidden in this component because exiting before hooks is forbidden(?!?!?!)
-        
-          <RecipeForm 
-            recipe={selectedRecipe}
-            onSubmitForm={handleSubmitForm}
-
-          />
-        }
-        <Carousel 
-          onEditRecipe={openEditForm}
-        />
-      </ThemeContext.Provider>
-    </RecipeDataProvider>
+    <ApiProvider>
+      <RecipeDataProvider> {/* hide away the context context to an extensible provider accepting nested children components */}
+        <ThemeContext.Provider value="dark"> {/* whenever we provide it to consumers, we can instantiate an arbitrary value*/}
+          <Navbar />
+          <div className="row w-full flex justify-between ">
+            <SearchBox/>
+            <button
+              className='mr-0 rounded-lg text-white font-semibold p-2 bg-blue-600 hover:bg-blue-400'
+              onClick={() => openEditForm()}>
+              Add
+            </button>
+          </div>
+          { formHidden == false && // toggle hidden in this component because exiting before hooks is forbidden(?!?!?!)
+      
+            <RecipeForm
+              recipe={selectedRecipe}
+              onSubmitForm={handleSubmitForm}
+            />
+          }
+          <Carousel onEditRecipe={openEditForm}/>
+        </ThemeContext.Provider>
+      </RecipeDataProvider>
+    </ApiProvider>
 
   )
 }
