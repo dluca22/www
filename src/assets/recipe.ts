@@ -1,7 +1,7 @@
-import { FoodGroups, type SvRecipes } from "./types";
+import { FoodGroups, type SvRecipe } from "./types";
 
 
-export class Recipe implements SvRecipes {
+export class Recipe implements SvRecipe {
   id?: number;
   name: string = '';
   type: string = '';
@@ -10,8 +10,10 @@ export class Recipe implements SvRecipes {
   time?: number;
   extraPrep: boolean = false;
  
-  constructor(data: SvRecipes){
-    Object.assign(this, data)
+  constructor(data?: SvRecipe){
+    if(data){
+      Object.assign(this, data)
+    }
   }
 
   get isMeat(){

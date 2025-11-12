@@ -1,4 +1,4 @@
-export interface SvRecipes {
+export interface SvRecipe {
   id?: number;
   name: string;
   type?: string;

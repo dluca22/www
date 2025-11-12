@@ -1,18 +1,28 @@
 import { RecipeCard } from "./RecipeCard";
 import { useRecipe } from "../services/dataProvider";
+import type { SvRecipe } from "../assets/types";
+import type { FC } from "react";
+import type { Recipe } from "../assets/recipe";
 
-export const Carousel = () => {
-  const {recipes} = useRecipe();
+interface CarouselProps {
+  onEditRecipe: (recipe: SvRecipe|Recipe) => void
+}
+
+export const Carousel: FC<CarouselProps> = (
+  {onEditRecipe}
+) => {
+  const { recipes } = useRecipe();
 
   const children = recipes.map(r =>
-    
+
     <RecipeCard
       key={r.id}
+      onEdit={onEditRecipe}
       {...r}
     />
   )
-    debugger
-  
+
+
 
   return (
     <div >

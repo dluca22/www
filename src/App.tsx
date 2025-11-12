@@ -1,16 +1,32 @@
 // import { useState } from 'react'
-import { createContext, useState } from 'react'
+import { createContext, useCallback, useState } from 'react'
 import './App.css'
-import { AddForm } from './components/AddForm'
+import { RecipeForm } from './components/AddForm'
 import { Carousel } from './components/Carousel'
 import { Navbar } from './components/Navbar'
-import { RecipeDataProvider } from './services/dataProvider'
+import { RecipeDataProvider, useRecipe } from './services/dataProvider'
 import { SearchBox } from './components/SearchBox'
+import type { SvRecipe } from './assets/types'
 
 export const ThemeContext = createContext("light"); // set up a context with default value light
 
 function App() {
+  const [selectedRecipe, setSelectedRecipe] = useState<SvRecipe|undefined>();
   const [formHidden, setFormHidden] = useState(true);
+ 
+  const {setRecipe} = useRecipe();
+
+  const handleSubmitForm = (formData: SvRecipe) => {
+    console.log('received', formData);
+    debugger
+    setRecipe(formData);
+    setFormHidden(true);
+  };
+
+  const openEditForm = useCallback((recipe?: SvRecipe) => {
+    setSelectedRecipe(recipe);
+    setFormHidden((isHidden) => !isHidden)
+  }, [])
 
   return (
     <RecipeDataProvider> {/* hide away the context context to an extensible provider accepting nested children components */}
@@ -20,12 +36,21 @@ function App() {
           <SearchBox/>
           <button
             className='mr-0 rounded-lg text-white font-semibold p-2 bg-blue-600 hover:bg-blue-400'
-            onClick={() => setFormHidden((isHidden) => !isHidden)}>
+            onClick={() => openEditForm()}>
             Add
           </button>
         </div>
-        <AddForm hidden={formHidden} />
-        <Carousel />
+        { formHidden == false && // toggle hidden in this component because exiting before hooks is forbidden(?!?!?!)
+        
+          <RecipeForm 
+            recipe={selectedRecipe}
+            onSubmitForm={handleSubmitForm}
+
+          />
+        }
+        <Carousel 
+          onEditRecipe={openEditForm}
+        />
       </ThemeContext.Provider>
     </RecipeDataProvider>
 
